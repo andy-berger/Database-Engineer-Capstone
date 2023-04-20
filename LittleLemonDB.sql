@@ -15,45 +15,6 @@ CREATE SCHEMA IF NOT EXISTS `LittleLemonDB` ;
 USE `LittleLemonDB` ;
 
 -- -----------------------------------------------------
--- Table `LittleLemonDB`.`table1`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `LittleLemonDB`.`table1` (
-)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `LittleLemonDB`.`Staff`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `LittleLemonDB`.`Staff` (
-  `StaffID` INT NOT NULL,
-  `FirstName` VARCHAR(255) NOT NULL,
-  `LastName` VARCHAR(255) NOT NULL,
-  `Role` VARCHAR(255) NOT NULL,
-  `Salary` DECIMAL NULL,
-  PRIMARY KEY (`StaffID`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `LittleLemonDB`.`Bookings`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `LittleLemonDB`.`Bookings` (
-  `BookingID` INT NOT NULL,
-  `Date` DATE NOT NULL,
-  `TableNo` INT NULL,
-  `StaffID` INT NULL,
-  PRIMARY KEY (`BookingID`),
-  INDEX `StaffID_idx` (`StaffID` ASC) VISIBLE,
-  CONSTRAINT `StaffID`
-    FOREIGN KEY (`StaffID`)
-    REFERENCES `LittleLemonDB`.`Staff` (`StaffID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
 -- Table `LittleLemonDB`.`Customers`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `LittleLemonDB`.`Customers` (
@@ -63,6 +24,24 @@ CREATE TABLE IF NOT EXISTS `LittleLemonDB`.`Customers` (
   `Email` VARCHAR(255) NOT NULL,
   `PhoneNumber` VARCHAR(45) NULL,
   PRIMARY KEY (`CustomerID`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `LittleLemonDB`.`Bookings`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `LittleLemonDB`.`Bookings` (
+  `BookingID` INT NOT NULL,
+  `BookingDate` DATE NOT NULL,
+  `TableNo` INT NOT NULL,
+  `CustomerID` INT NOT NULL,
+  PRIMARY KEY (`BookingID`),
+  INDEX `CustomerID_idx` (`CustomerID` ASC) VISIBLE,
+  CONSTRAINT `CustomerID`
+    FOREIGN KEY (`CustomerID`)
+    REFERENCES `LittleLemonDB`.`Customers` (`CustomerID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
@@ -99,6 +78,19 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
+-- Table `LittleLemonDB`.`Staff`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `LittleLemonDB`.`Staff` (
+  `StaffID` INT NOT NULL,
+  `FirstName` VARCHAR(255) NOT NULL,
+  `LastName` VARCHAR(255) NOT NULL,
+  `Role` VARCHAR(255) NOT NULL,
+  `Salary` DECIMAL NULL,
+  PRIMARY KEY (`StaffID`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
 -- Table `LittleLemonDB`.`Orders`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `LittleLemonDB`.`Orders` (
@@ -106,18 +98,13 @@ CREATE TABLE IF NOT EXISTS `LittleLemonDB`.`Orders` (
   `OrderDate` DATE NOT NULL,
   `Quantity` INT NOT NULL,
   `TotalCost` DECIMAL NOT NULL,
-  `CustomerID` INT NOT NULL,
   `DeliveryID` INT NOT NULL,
   `MenuID` INT NOT NULL,
+  `StaffID` INT NOT NULL,
   PRIMARY KEY (`OrderID`),
-  INDEX `CustomerID_idx` (`CustomerID` ASC) VISIBLE,
   INDEX `DeliveryID_idx` (`DeliveryID` ASC) VISIBLE,
   INDEX `MenuID_idx` (`MenuID` ASC) VISIBLE,
-  CONSTRAINT `CustomerID`
-    FOREIGN KEY (`CustomerID`)
-    REFERENCES `LittleLemonDB`.`Customers` (`CustomerID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+  INDEX `StaffID_idx` (`StaffID` ASC) VISIBLE,
   CONSTRAINT `DeliveryID`
     FOREIGN KEY (`DeliveryID`)
     REFERENCES `LittleLemonDB`.`DeliveryStatus` (`DeliveryID`)
@@ -126,6 +113,11 @@ CREATE TABLE IF NOT EXISTS `LittleLemonDB`.`Orders` (
   CONSTRAINT `MenuID`
     FOREIGN KEY (`MenuID`)
     REFERENCES `LittleLemonDB`.`Menu` (`MenuID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `StaffID`
+    FOREIGN KEY (`StaffID`)
+    REFERENCES `LittleLemonDB`.`Staff` (`StaffID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
